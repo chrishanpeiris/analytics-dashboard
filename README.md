@@ -1,5 +1,7 @@
 # Analytics Dashboard
 
+![CI](https://github.com/chrishanpeiris/analytics-dashboard/actions/workflows/ci.yml/badge.svg)
+
 A full-stack sales analytics dashboard demonstrating:
 
 - **GraphQL API** — Apollo Server 4, schema-first design, DataLoader for N+1 prevention

@@ -12,6 +12,8 @@ A full-stack sales analytics dashboard demonstrating:
 
 ## Architecture
 
+➡ **[Interactive architecture diagram](docs/architecture.html)** — open in browser, download as PNG.
+
 ```
 Browser (Next.js 14)
   │  GraphQL mutation: login → receives JWT

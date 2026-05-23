@@ -20,7 +20,7 @@ COPY apps/api/src         ./apps/api/src
 COPY apps/api/tsconfig.json ./apps/api/tsconfig.json
 COPY apps/api/prisma      ./apps/api/prisma
 # Generate Prisma client now that schema.prisma is present
-RUN npx --prefix apps/api prisma generate
+RUN cd apps/api && npx prisma generate
 RUN npm run build -w apps/api
 
 FROM base AS runner

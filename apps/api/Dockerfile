@@ -7,16 +7,20 @@ FROM base AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY apps/api/package.json ./apps/api/package.json
-RUN npm ci --workspace=apps/api --omit=dev
+# --ignore-scripts prevents postinstall (prisma generate) from running before
+# the schema is available. We generate explicitly in the builder stage instead.
+RUN npm ci --workspace=apps/api --omit=dev --ignore-scripts
 
 FROM base AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY apps/api/package.json ./apps/api/package.json
-RUN npm ci --workspace=apps/api
+RUN npm ci --workspace=apps/api --ignore-scripts
 COPY apps/api/src         ./apps/api/src
 COPY apps/api/tsconfig.json ./apps/api/tsconfig.json
 COPY apps/api/prisma      ./apps/api/prisma
+# Generate Prisma client now that schema.prisma is present
+RUN npx --prefix apps/api prisma generate
 RUN npm run build -w apps/api
 
 FROM base AS runner
@@ -26,7 +30,7 @@ COPY --from=builder /app/apps/api/dist       ./apps/api/dist
 COPY --from=builder /app/apps/api/prisma     ./apps/api/prisma
 COPY --from=deps    /app/node_modules        ./node_modules
 COPY apps/api/package.json ./apps/api/
-# Generate Prisma client in the runner stage
+# Re-generate Prisma client against the production node_modules
 RUN cd apps/api && npx prisma generate
 WORKDIR /app/apps/api
 EXPOSE 4000
